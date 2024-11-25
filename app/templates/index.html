@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="w-full h-screen flex flex-col">
+    <!-- 채팅 내용 영역 -->
+    <div class="flex-1 p-6 overflow-y-auto flex flex-col space-y-4">
+        <!-- 사용자 메시지 -->
+        <div class="flex justify-start">
+            <div class="text-white p-3 rounded-lg max-w-xs" style="background-color: #89A8B2;">
+                안녕하세요! 무엇을 도와드릴까요?
+            </div>
+        </div>
+
+        <!-- 챗봇 메시지 -->
+        <div class="flex justify-end">
+            
+        </div>
+
+        <!-- 다른 대화들 추가... -->
+    </div>
+
+    <!-- 메시지 입력란 -->
+    <div class="p-4 border-t flex-shrink-0">
+        <div class="flex items-center">
+            <input type="text" id="messageInput" placeholder="메시지를 입력하세요..." style="background-color: #393E46;"
+                class="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
+                <button class="ml-4 p-2 text-white rounded-lg" style="background-color: #89A8B2;" id="sendButton">
+                    <!-- Heroicons 화살표 아이콘 -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7-7-7 7" />
+                    </svg>
+                </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 메시지 전송 버튼 클릭 시 메시지 추가하는 JavaScript 코드
+    function sendMessage() {
+        const messageInput = document.getElementById("messageInput");
+        const message = messageInput.value;
+        if (message.trim() !== "") {
+            // 새로운 사용자 메시지 추가
+            const userMessage = document.createElement("div");
+            userMessage.classList.add("flex", "justify-end");
+            userMessage.innerHTML = `<div class="bg-gray-300 text-gray-700 p-3 rounded-lg max-w-xs">${message}</div>`;
+            document.querySelector(".p-6").appendChild(userMessage);
+
+            // 사용자 메시지 입력란 비우기
+            messageInput.value = "";
+
+            // 스크롤 맨 아래로 자동 이동
+            const chatContainer = document.querySelector(".p-6");
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    }
+
+    // 전송 버튼 클릭 이벤트
+    document.getElementById("sendButton").addEventListener("click", sendMessage);
+
+    // Enter 키를 눌렀을 때 전송 버튼 클릭되도록 처리
+    document.getElementById("messageInput").addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // 기본 Enter 동작을 막음 (새 줄 추가 방지)
+            sendMessage(); // 메시지 전송 함수 호출
+        }
+    });
+</script>
+{% endblock %}

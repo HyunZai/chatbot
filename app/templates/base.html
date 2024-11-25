@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Zai Chatbot</title>
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('-translate-x-full');
+        }
+    </script>
+</head>
+<body style="background-color: #393E46;">
+    <!-- Navbar -->
+    <nav class="text-white fixed w-full z-50" style="background-color: #89A8B2;">
+        <div class="container mx-auto px-4 flex items-center h-16">
+            <!-- Sidebar toggle button -->
+            <button class="px-2 py-1 lg:hidden" onclick="toggleSidebar()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+
+            <!-- Navbar menu -->
+            <ul class="flex space-x-8 text-lg mx-auto lg:ml-48">
+                <li><a href="/" class="hover:underline" style="color: #222831;">Chatbot</a></li>
+                <li><a href="#" class="hover:underline" style="color: #222831;">Information</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main content with sidebar -->
+    <div class="flex">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="border-r shadow-lg fixed inset-y-0 left-0 top-16 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 w-64 z-40" style="background-color: #222831;">
+            <div class="p-4" style="color: #89A8B2;">
+                <h2 class="text-xl font-bold mb-4" style="color:#B3C8CF;">Menu</h2>
+                <ul>
+                    <li class="mb-2"><button class="w-full text-left py-2 px-4 hover:bg-blue-100 hover:text-black rounded">New Chat</button></li>
+                    <hr class="mb-2 mt-2">
+                    {% for title in chat_titles %}
+                    <li class="mb-2">
+                        <button class="w-full text-left py-2 px-4 hover:bg-blue-100 hover:text-black rounded">{{ title[0] }}</button>
+                    </li>
+                    {% endfor %}
+                    <!-- <li class="mb-2"><button class="w-full text-left py-2 px-4 hover:bg-blue-100 hover:text-black rounded">Conversation 1</button></li>
+                    <li class="mb-2"><button class="w-full text-left py-2 px-4 hover:bg-blue-100 hover:text-black rounded">Conversation 2</button></li> -->
+                </ul>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <main class="flex-1 lg:ml-64 p-4 mt-16">
+            {% block content %}
+            <h1 class="text-2xl font-bold">Welcome to the Chatbot Interface</h1>
+            <p class="mt-2 text-gray-600">This is the main content area.</p>
+            {% endblock %}
+        </main>
+    </div>
+</body>
+</html>
