@@ -1,6 +1,11 @@
+from dotenv import load_dotenv
 import os
 
+load_dotenv()
+
 class Config:
-    OPENAI_API_KEY = os.getenv('OPENAI_API_KEY', 'openai_api_key')
-    # SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URI', 'sqlite:///app.db')
-    # SQLALCHEMY_TRACK_MODIFICATIONS = False
+    DB_HOST = os.environ.get('DB_HOST')
+    DB_USER = os.environ.get('DB_USER')
+    DB_PASSWORD = os.environ.get('DB_PASSWORD')
+    DB_DATABASE = os.environ.get('DB_DATABASE')
+    OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
