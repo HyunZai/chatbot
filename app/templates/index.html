@@ -22,11 +22,12 @@
         <div class="flex items-center">
             <input type="text" id="messageInput" placeholder="메시지를 입력하세요..." style="background-color: #393E46;"
                 class="w-full p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 text-white">
-                <button class="ml-4 p-2 text-white rounded-lg" style="background-color: #89A8B2;" id="sendButton">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7-7-7 7" />
-                    </svg>
-                </button>
+            <button class="ml-4 p-2 text-white rounded-lg" style="background-color: #89A8B2;" id="sendButton">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7-7-7 7" />
+                </svg>
+            </button>
         </div>
     </div>
 </div>
@@ -45,6 +46,7 @@
     function sendMessage() {
         const messageInput = document.getElementById("messageInput");
         const message = messageInput.value;
+
         if (message.trim() !== "") {
             // 새로운 사용자 메시지 추가
             const userMessage = document.createElement("div");
@@ -55,6 +57,30 @@
             // 사용자 메시지 입력란 비우기
             messageInput.value = "";
 
+            // 서버로 메시지 전송
+            fetch('/send_message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        return;
+                    }
+
+                    // 챗봇 응답 추가
+                    const botMessage = document.createElement("div");
+                    userMessage.classList.add("flex", "justify-start");
+                    userMessage.innerHTML = `<div class="text-white p-3 rounded-lg max-w-xs" style="background-color: #89A8B2;">${message}</div>`;
+                    document.querySelector(".p-6").appendChild(userMessage);
+
+                    // 스크롤 아래로 이동
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                })
+                .catch(error => console.error('Error:', error));
+
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
     }
@@ -64,6 +90,8 @@
 
     // Enter 키를 눌렀을 때 전송 버튼 클릭되도록 처리
     document.getElementById("messageInput").addEventListener("keydown", function (event) {
+        if (event.isComposing) return; //한글 입력 시 한글이 조합문자라 keydown event를 두 번 호출한다고 함. 그래서 추가
+
         if (event.key === "Enter") {
             event.preventDefault(); // 기본 Enter 동작을 막음 (새 줄 추가 방지)
             sendMessage(); // 메시지 전송 함수 호출
