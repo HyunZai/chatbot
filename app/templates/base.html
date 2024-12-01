@@ -10,6 +10,33 @@
             const sidebar = document.getElementById('sidebar');
             sidebar.classList.toggle('-translate-x-full');
         }
+
+        function chatListButtonClick(button) {
+            const id = button.parentElement.children[0].innerHTML;
+            fetch(`/c/${id}`, {
+                method: 'GET'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    console.error(data.error);
+                    return;
+                }
+                // chatContainer에 가져온 채팅 내용 추가
+                const chatContainer = document.getElementById("chatContainer");
+                chatContainer.innerHTML = ''; // 기존 내용을 비움
+
+                data.chatMessages.forEach(message => {
+                    const chatMessage = document.createElement("div");
+                    chatMessage.classList.add("flex", message.role === "user" ? "justify-end" : "justify-start");
+                    chatMessage.innerHTML = `<div class="p-3 rounded-lg max-w-xs ${message.role === "user" ? 'bg-gray-300 text-gray-700' : 'text-white'}" style="background-color: ${message.role === "user" ? '' : '#89A8B2'};">${message.content}</div>`;
+                    chatContainer.appendChild(chatMessage);
+                });
+
+                chatContainer.scrollTop = chatContainer.scrollHeight; // 스크롤을 아래로 이동
+            })
+            .catch(error => console.error('Error:', error));
+        }
     </script>
 </head>
 <body style="background-color: #393E46;">
@@ -39,10 +66,11 @@
                 <h2 class="text-xl font-bold mb-4" style="color:#B3C8CF;">Menu</h2>
                 <ul>
                     <li class="mb-2"><button class="w-full text-left py-2 px-4 hover:bg-blue-100 hover:text-black rounded">New Chat</button></li>
-                    <hr class="mb-2 mt-2">
-                    {% for title in chat_titles %}
+                    <hr id="dividerLine" class="mb-2 mt-2">
+                    {% for chat in chatList %}
                     <li class="mb-2">
-                        <button class="w-full text-left py-2 px-4 hover:bg-blue-100 hover:text-black rounded">{{ title[0] }}</button>
+                        <div class="hidden">{{chat[0]}}</div>
+                        <button class="w-full text-left py-2 px-4 hover:bg-blue-100 hover:text-black rounded" onclick="chatListButtonClick(this)">{{ chat[1] }}</button>
                     </li>
                     {% endfor %}
                     <!-- <li class="mb-2"><button class="w-full text-left py-2 px-4 hover:bg-blue-100 hover:text-black rounded">Conversation 1</button></li>
