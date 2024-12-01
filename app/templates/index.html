@@ -10,11 +10,6 @@
                 안녕하세요! 무엇을 도와드릴까요?
             </div>
         </div>
-
-        <!-- 챗봇 메시지 -->
-        <div class="flex justify-end">
-
-        </div>
     </div>
 
     <!-- 메시지 입력란 -->
@@ -44,6 +39,8 @@
 
     // 메시지 전송 버튼 클릭 시 메시지 추가하는 JavaScript 코드
     function sendMessage() {
+        const chatContainer = document.getElementById("chatContainer");
+        
         const messageInput = document.getElementById("messageInput");
         const message = messageInput.value;
 
@@ -52,7 +49,9 @@
             const userMessage = document.createElement("div");
             userMessage.classList.add("flex", "justify-end");
             userMessage.innerHTML = `<div class="bg-gray-300 text-gray-700 p-3 rounded-lg max-w-xs">${message}</div>`;
-            document.querySelector(".p-6").appendChild(userMessage);
+            chatContainer.appendChild(userMessage);
+
+            const sendData = { message: message,  newChat: (chatContainer.children.length > 2 ? false : true) };
 
             // 사용자 메시지 입력란 비우기
             messageInput.value = "";
@@ -61,7 +60,7 @@
             fetch('/send_message', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: message }),
+                body: JSON.stringify({ sendData }),
             })
                 .then(response => response.json())
                 .then(data => {
@@ -72,15 +71,20 @@
 
                     // 챗봇 응답 추가
                     const botMessage = document.createElement("div");
-                    userMessage.classList.add("flex", "justify-start");
-                    userMessage.innerHTML = `<div class="text-white p-3 rounded-lg max-w-xs" style="background-color: #89A8B2;">${message}</div>`;
-                    document.querySelector(".p-6").appendChild(userMessage);
+                    botMessage.classList.add("flex", "justify-start");
+                    botMessage.innerHTML = `<div class="text-white p-3 rounded-lg max-w-xs" style="background-color: #89A8B2;">${data.bot_response}</div>`;
+                    chatContainer.appendChild(botMessage);
+
+                    // 새로운 채팅 타이틀 추가 (동적으로 사이드바 업데이트)
+                    if (data.new_chat_title && data.new_chat_id) {
+                        addSidebarButton(data.new_chat_id, data.new_chat_title);
+                    }
 
                     // 스크롤 아래로 이동
                     chatContainer.scrollTop = chatContainer.scrollHeight;
                 })
                 .catch(error => console.error('Error:', error));
-
+                
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
     }
@@ -97,6 +101,32 @@
             sendMessage(); // 메시지 전송 함수 호출
         }
     });
+
+    // 사이드바에 새로운 채팅 버튼 추가 함수
+    function addSidebarButton(chatId, chatTitle) {
+        const sidebar = document.getElementById("sidebar").querySelector("ul");
+
+        // "New Chat" 버튼 아래에 있는 line object
+        const dividerLine = document.getElementById("dividerLine");
+
+        // 새로운 버튼 생성
+        const listItem = document.createElement("li");
+        listItem.classList.add("mb-2");
+
+        listItem.innerHTML = `
+            <div class="hidden">${chatId}</div>
+            <button class="w-full text-left py-2 px-4 hover:bg-blue-100 hover:text-black rounded" onclick="chatListButtonClick(this)">
+                ${chatTitle}
+            </button>
+        `;
+
+        // "New Chat" 버튼 바로 아래에 추가
+        if (dividerLine.nextSibling) {
+            sidebar.insertBefore(listItem, dividerLine.nextSibling);
+        } else {
+            sidebar.appendChild(listItem); // 마지막 요소인 경우 마지막에 추가
+        }
+    }
 </script>
 
 {% endblock %}

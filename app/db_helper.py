@@ -11,7 +11,7 @@ def get_db_connection():
     )
     return connection
 
-def execute_query(query, params=None, fetchone=False, fetchall=False):
+def execute_query(query, params=None, fetchone=False, fetchall=False, return_lastrowid=False):
     """
     쿼리를 실행하는 헬퍼 함수.
     
@@ -20,9 +20,10 @@ def execute_query(query, params=None, fetchone=False, fetchall=False):
         params (tuple): 쿼리에 전달할 매개변수.
         fetchone (bool): 단일 결과를 가져올지 여부.
         fetchall (bool): 여러 결과를 가져올지 여부.
+        return_lastrowid (bool): INSERT 쿼리 후 삽입된 ID를 반환할지 여부.
     
     Returns:
-        tuple/list: 쿼리 결과.
+        tuple/list/int: 쿼리 결과 또는 마지막 삽입된 ID.
     """
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -32,6 +33,9 @@ def execute_query(query, params=None, fetchone=False, fetchall=False):
             result = cursor.fetchone()
         elif fetchall:
             result = cursor.fetchall()
+        elif return_lastrowid:
+            conn.commit()
+            result = cursor.lastrowid
         else:
             conn.commit()
             result = None
