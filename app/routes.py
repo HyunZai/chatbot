@@ -57,7 +57,10 @@ def send_message():
 
         newChatTitle = None
         if newChat:
-            chatTitle = get_openai_response(f"'{userMessage}' 이 문장의 핵심 키워드를 찾아서 타이틀로 쓸 수 있는 간단한 문장을 12자 이하로 만들어줘. 그 외의 문장은 생략하고 따옴표와 쌍따옴표도 나오지 않게 부탁해.")
+            if len(userMessage) > 14:
+                chatTitle = get_openai_response(f"'{userMessage}' 이 문장의 핵심 키워드를 찾아서 12자 이하로 제목을 만들어줘. 그 외의 문장은 생략해줘.")
+            else:
+                chatTitle = userMessage
             print(chatTitle)
             createNewChatQuery = "INSERT INTO chat_list (title) VALUES (%s);"
             param = (chatTitle,)
